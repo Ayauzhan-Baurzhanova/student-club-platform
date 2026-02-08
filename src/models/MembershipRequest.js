@@ -9,7 +9,8 @@ const membershipRequestSchema = new mongoose.Schema(
         },
         club: {
             type: String,
-            enum: ["sports", "debate", "music"],
+            // FIX: Added "tech" to this list so the database accepts it
+            enum: ["sports", "debate", "music", "tech"],
             required: true
         },
         message: {
