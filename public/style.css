@@ -157,7 +157,18 @@ nav {
 }
 .card:hover { transform: translateY(-10px); }
 
-.card-image { height: 150px; display: flex; align-items: flex-end; justify-content: flex-end; padding: 15px; }
+.card-image {
+    height: 200px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 15px;
+    
+   
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
 .music-bg { background: linear-gradient(135deg, #a8ff78, #78ffd6); }
 .tech-bg { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
 .debate-bg { background: linear-gradient(135deg, #f093fb, #f5576c); }
@@ -276,3 +287,4 @@ th { background: rgba(0,0,0,0.05); font-weight: 700; }
 
 #toast.success { background-color: var(--success); }
 #toast.error { background-color: var(--danger); }
+
