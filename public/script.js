@@ -1,194 +1,229 @@
-const API_URL = "/api";
+const API_URL = "/api"; // Works on localhost and Render
+let currentClub = null;
 
-// Utils
-function show(id) { document.getElementById(id).classList.remove('hidden'); }
-function hide(id) { document.getElementById(id).classList.add('hidden'); }
-function showError(msg) {
-    const el = document.getElementById('errorBox');
-    el.innerText = msg;
-    show('errorBox');
-    setTimeout(() => hide('errorBox'), 3000);
-}
+// ---  CHECK AUTH ON LOAD ---
+document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+    const path = window.location.pathname;
 
-// Check Auth on Load
-const token = localStorage.getItem('token');
-if (token) loadDashboard();
-else show('authSection');
-
-// Tabs
-function switchTab(tab) {
-    if (tab === 'login') {
-        show('loginForm'); hide('registerForm');
-        document.querySelectorAll('.tab')[0].classList.add('active');
-        document.querySelectorAll('.tab')[1].classList.remove('active');
-    } else {
-        hide('loginForm'); show('registerForm');
-        document.querySelectorAll('.tab')[0].classList.remove('active');
-        document.querySelectorAll('.tab')[1].classList.add('active');
+    // nav
+    const authLinks = document.getElementById("authLinks");
+    if (authLinks) {
+        if (token) {
+            authLinks.innerHTML = `<a href="profile.html" class="btn-primary">My Profile</a>`;
+        } else {
+            authLinks.innerHTML = `<a href="login.html" class="btn-outline">Log In</a>`;
+        }
     }
+
+    // pages
+    if (document.body.id === "page-home") initHome();
+    if (document.body.id === "page-login") initLogin();
+    if (document.body.id === "page-profile") initProfile(user);
+    if (document.body.id === "page-admin") initAdmin(user);
+});
+
+// --- LOGOUT FUNCTION ---
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
 }
 
-// LOGIN & REGISTER
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    handleAuth(e, '/register', 'reg');
-});
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    handleAuth(e, '/login', 'login');
-});
+// ==========================================
+// PAGE: HOME
+// ==========================================
+function initHome() {
+    // Only logged-in users can join
+    window.openJoinModal = (clubName) => {
+        if (!localStorage.getItem("token")) {
+            alert("Please log in to join clubs!");
+            window.location.href = "login.html";
+            return;
+        }
+        currentClub = clubName;
+        document.getElementById("modalClubName").innerText = clubName.toUpperCase();
+        document.getElementById("joinModal").classList.remove("hidden");
+    };
 
-async function handleAuth(e, endpoint, prefix) {
-    e.preventDefault();
-    const payload = prefix === 'reg' 
-        ? { username: document.getElementById('regUsername').value, email: document.getElementById('regEmail').value, password: document.getElementById('regPassword').value }
-        : { email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value };
+    window.closeModal = () => {
+        document.getElementById("joinModal").classList.add("hidden");
+    };
 
+    window.submitJoinRequest = async () => {
+        const message = document.getElementById("joinMessage").value;
+        const token = localStorage.getItem("token");
+        
+        try {
+            const res = await fetch(`${API_URL}/requests`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ club: currentClub, message })
+            });
+            if (!res.ok) throw new Error("Failed to join");
+            alert("Request Sent!");
+            closeModal();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+}
+
+// ==========================================
+// PAGE: LOGIN / REGISTER
+// ==========================================
+function initLogin() {
+    // Toggle between Login and Register forms
+    window.toggleAuth = (mode) => {
+        if (mode === 'register') {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('formTitle').innerText = "Create Account";
+        } else {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('formTitle').innerText = "Welcome Back";
+        }
+    };
+
+    // Handle Login Submit
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        await handleAuth('/login', { email, password });
+    });
+
+    // Handle Register Submit
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('regUsername').value;
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+        await handleAuth('/register', { username, email, password, role: 'user' }); // Default role
+    });
+}
+
+async function handleAuth(endpoint, data) {
+    const errorBox = document.getElementById('errorBox');
     try {
         const res = await fetch(`${API_URL}${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message);
+        const result = await res.json();
+        
+        if (!res.ok) throw new Error(result.message);
 
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data));
-        loadDashboard();
-    } catch (err) { showError(err.message); }
+        localStorage.setItem("token", result.token);
+        localStorage.setItem("user", JSON.stringify(result));
+        window.location.href = "profile.html"; // Go to profile after login
+    } catch (err) {
+        errorBox.innerText = err.message;
+        errorBox.classList.remove("hidden");
+    }
 }
 
-function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.reload();
-}
+// ==========================================
+// PAGE: PROFILE
+// ==========================================
+async function initProfile(user) {
+    if (!user) { window.location.href = "login.html"; return; }
 
-// --- DASHBOARD ---
-function loadDashboard() {
-    hide('authSection');
-    show('dashboardSection');
-    show('navbar');
+    // Fill Info
+    document.getElementById("profileName").innerText = user.username;
+    document.getElementById("profileEmail").innerText = user.email;
+    document.getElementById("profileRole").innerText = user.role;
 
-    const user = JSON.parse(localStorage.getItem('user'));
-    document.getElementById('userGreeting').innerText = `Hi, ${user.username}`;
-    document.getElementById('profileName').innerText = user.username;
-    document.getElementById('profileRole').innerText = user.role;
-
-    // ADMIN CHECK
-    if (user.role === 'admin') {
-        show('adminBadge');
-        show('adminPanel');
-        fetchAdminRequests(); // Fetch ALL requests
-    } else {
-        hide('adminBadge');
-        hide('adminPanel');
+    if (user.role === "admin") {
+        document.getElementById("adminLink").classList.remove("hidden");
     }
 
-    fetchMyRequests(); // Fetch MY requests
-}
-
-// Join Club
-document.getElementById('joinClubForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
+    // Fetch My Requests
+    const token = localStorage.getItem("token");
     try {
         const res = await fetch(`${API_URL}/requests`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({
-                club: document.getElementById('clubSelect').value,
-                message: document.getElementById('clubMessage').value
-            })
+            headers: { "Authorization": `Bearer ${token}` }
         });
-        if (!res.ok) throw new Error('Failed to join');
-        alert('Sent!');
-        fetchMyRequests();
-        // If admin, refresh admin list too
-        if(JSON.parse(localStorage.getItem('user')).role === 'admin') fetchAdminRequests();
-    } catch (err) { showError(err.message); }
-});
-
-// Fetch MY Requests
-async function fetchMyRequests() {
-    const token = localStorage.getItem('token');
-    try {
-        const res = await fetch(`${API_URL}/requests`, { headers: { 'Authorization': `Bearer ${token}` } });
-        const data = await res.json();
-        renderList('requestsList', data, false);
-    } catch (err) { console.error(err); }
-}
-
-// --- ADMIN FUNCTIONS ---
-
-async function fetchAdminRequests() {
-    const token = localStorage.getItem('token');
-    try {
+        const requests = await res.json();
         
-        const res = await fetch(`${API_URL}/requests/all`, { 
-            headers: { 'Authorization': `Bearer ${token}` } 
-        });
-        const data = await res.json();
-        renderList('adminRequestsList', data, true);
-    } catch (err) { 
-        document.getElementById('adminRequestsList').innerText = "Error loading admin data. Did you fix the backend route?";
-    }
-}
+        const list = document.getElementById("myRequestsList");
+        if (requests.length === 0) {
+            list.innerHTML = "<p>You haven't joined any clubs yet.</p>";
+            return;
+        }
 
-async function updateStatus(id, newStatus) {
-    const token = localStorage.getItem('token');
-    try {
-        await fetch(`${API_URL}/requests/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ status: newStatus })
-        });
-        fetchAdminRequests(); // Refresh list
-    } catch (err) { alert(err.message); }
-}
-
-async function deleteRequest(id) {
-    if(!confirm("Delete this request?")) return;
-    const token = localStorage.getItem('token');
-    try {
-        await fetch(`${API_URL}/requests/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        fetchAdminRequests();
-    } catch (err) { alert(err.message); }
-}
-
-// Render Helper
-function renderList(elementId, data, isAdmin) {
-    const list = document.getElementById(elementId);
-    if (!data || data.length === 0) {
-        list.innerHTML = '<p class="text-muted">No requests found.</p>';
-        return;
-    }
-    
-    list.innerHTML = data.map(req => `
-        <div class="request-item" style="border-left: 4px solid ${getColor(req.status)}">
-            <div style="display:flex; justify-content:space-between">
-                <strong>${req.club.toUpperCase()}</strong>
+        list.innerHTML = requests.map(req => `
+            <div class="card" style="padding: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>${req.club.toUpperCase()} Club</strong>
+                    <br>
+                    <small>${req.message}</small>
+                </div>
                 <span class="badge status-${req.status}">${req.status}</span>
             </div>
-            <p>${req.message}</p>
-            <small>User ID: ${req.user} | Date: ${new Date(req.createdAt).toLocaleDateString()}</small>
-            
-            ${isAdmin ? `
-                <div class="admin-actions">
-                    <button class="btn-approve" onclick="updateStatus('${req._id}', 'approved')">Approve</button>
-                    <button class="btn-reject" onclick="updateStatus('${req._id}', 'rejected')">Reject</button>
-                    <button class="btn-delete" onclick="deleteRequest('${req._id}')">Delete</button>
-                </div>
-            ` : ''}
-        </div>
-    `).join('');
+        `).join("");
+    } catch (err) {
+        console.error(err);
+    }
 }
 
-function getColor(status) {
-    if(status === 'approved') return '#2ecc71';
-    if(status === 'rejected') return '#e74c3c';
-    return '#f1c40f';
+// ==========================================
+// PAGE: ADMIN
+// ==========================================
+async function initAdmin(user) {
+    if (!user || user.role !== "admin") {
+        alert("Access Denied");
+        window.location.href = "index.html";
+        return;
+    }
 
+    const token = localStorage.getItem("token");
+    const list = document.getElementById("adminRequestsList");
+
+    async function loadData() {
+        try {
+            const res = await fetch(`${API_URL}/requests/all`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const requests = await res.json();
+
+            // Stats
+            document.getElementById("statTotal").innerText = requests.length;
+            document.getElementById("statPending").innerText = requests.filter(r => r.status === 'pending').length;
+
+            // Table
+            list.innerHTML = requests.map(req => `
+                <tr>
+                    <td>${req.user}</td> <td>${req.club}</td>
+                    <td>${req.message}</td>
+                    <td>${new Date(req.createdAt).toLocaleDateString()}</td>
+                    <td><span class="status-${req.status}">${req.status.toUpperCase()}</span></td>
+                    <td>
+                        <button onclick="updateStatus('${req._id}', 'approved')" style="color: green; font-weight:bold; border:none; background:none; cursor:pointer;">Approve</button>
+                        <button onclick="updateStatus('${req._id}', 'rejected')" style="color: red; font-weight:bold; border:none; background:none; cursor:pointer;">Reject</button>
+                    </td>
+                </tr>
+            `).join("");
+        } catch (err) {
+            list.innerHTML = "<tr><td colspan='6'>Error loading data</td></tr>";
+        }
+    }
+
+    window.updateStatus = async (id, status) => {
+        try {
+            await fetch(`${API_URL}/requests/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ status })
+            });
+            loadData(); // Refresh table
+        } catch (err) {
+            alert("Error updating");
+        }
+    };
+
+    loadData();
 }
