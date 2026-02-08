@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | CampusConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="center-body" id="page-login">
+
+    <div class="auth-card">
+        <h2 id="formTitle">Welcome Back</h2>
+        <div id="errorBox" class="error-msg hidden"></div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit" class="btn-primary full-width">Log In</button>
+            <p class="switch-text">New here? <a href="#" onclick="toggleAuth('register')">Create an account</a></p>
+        </form>
+
+        <form id="registerForm" class="hidden">
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="regUsername" required>
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="regEmail" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="regPassword" required>
+            </div>
+            <button type="submit" class="btn-primary full-width">Sign Up</button>
+            <p class="switch-text">Already have an account? <a href="#" onclick="toggleAuth('login')">Log in</a></p>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
