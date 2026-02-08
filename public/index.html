@@ -3,66 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CampusConnect | Home</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>CampusConnect | Discover</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="page-home">
 
     <nav>
-        <div class="logo">CampusConnect 🚀</div>
+        <div class="logo">CampusConnect <span class="sparkle">✨</span></div>
         <div class="nav-links">
-            <a href="index.html" class="active">Clubs</a>
+            <a href="index.html" class="nav-item active">Clubs</a>
             <div id="authLinks">
                 </div>
         </div>
     </nav>
 
-    <header class="hero">
+    <header class="hero-container">
+        <div id="hero-bg" class="hero-bg"></div>
+        
         <div class="hero-content">
-            <h1>Find Your Community.</h1>
+            <h1>Find Your <span class="gradient-text">Tribe.</span></h1>
             <p>Join over 20+ student-led clubs, connect with peers, and make your university life unforgettable.</p>
-            <a href="#clubsGrid" class="btn-primary">Explore Clubs</a>
+            <a href="#clubsGrid" class="btn-glow">Explore Clubs 🚀</a>
         </div>
+        
+        <div class="scroll-indicator">↓</div>
     </header>
 
-    <section id="clubsGrid" class="container">
-        <h2 class="section-title">Trending Clubs</h2>
+    <section id="clubsGrid" class="container section-padding">
+        <h2 class="section-title">Trending Clubs 🔥</h2>
         <div class="grid">
             
             <div class="card club-card">
-                <div class="card-image">IMAGE-GOES-HERE (music.jpg)</div>
+                <div class="card-image music-bg">
+                    <span class="category-badge">Arts</span>
+                </div>
                 <div class="card-body">
                     <h3>Music Club</h3>
-                    <p>Jam sessions, concerts, and music theory workshops. Open to all instruments.</p>
-                    <button onclick="openJoinModal('music')" class="btn-outline">Join Now</button>
+                    <p>Jam sessions, concerts, and music theory workshops.</p>
+                    <button onclick="openJoinModal('music')" class="btn-outline">Join Squad</button>
                 </div>
             </div>
 
             <div class="card club-card">
-                <div class="card-image">IMAGE-GOES-HERE (tech.jpg)</div>
+                <div class="card-image tech-bg">
+                    <span class="category-badge">Tech</span>
+                </div>
                 <div class="card-body">
                     <h3>Tech & Coding</h3>
-                    <p>Hackathons, web dev workshops, and AI projects. Build the future with us.</p>
-                    <button onclick="openJoinModal('tech')" class="btn-outline">Join Now</button>
+                    <p>Hackathons, AI projects, and late-night coding.</p>
+                    <button onclick="openJoinModal('tech')" class="btn-outline">Join Squad</button>
                 </div>
             </div>
 
             <div class="card club-card">
-                <div class="card-image">IMAGE-GOES-HERE (debate.jpg)</div>
+                <div class="card-image debate-bg">
+                    <span class="category-badge">Intellectual</span>
+                </div>
                 <div class="card-body">
                     <h3>Debate Society</h3>
-                    <p>Sharpen your public speaking and critical thinking skills in weekly debates.</p>
-                    <button onclick="openJoinModal('debate')" class="btn-outline">Join Now</button>
+                    <p>Sharpen your speaking skills in weekly battles.</p>
+                    <button onclick="openJoinModal('debate')" class="btn-outline">Join Squad</button>
                 </div>
             </div>
 
             <div class="card club-card">
-                <div class="card-image">IMAGE-GOES-HERE (sports.jpg)</div>
+                <div class="card-image sports-bg">
+                    <span class="category-badge">Active</span>
+                </div>
                 <div class="card-body">
                     <h3>Sports League</h3>
-                    <p>Football, basketball, and volleyball tournaments. Stay fit and competitive.</p>
-                    <button onclick="openJoinModal('sports')" class="btn-outline">Join Now</button>
+                    <p>Football, basketball, and volleyball tournaments.</p>
+                    <button onclick="openJoinModal('sports')" class="btn-outline">Join Squad</button>
                 </div>
             </div>
 
@@ -70,24 +82,21 @@
     </section>
 
     <div id="joinModal" class="modal hidden">
-        <div class="modal-content">
+        <div class="modal-content glass-panel">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Join <span id="modalClubName"></span></h2>
-            <textarea id="joinMessage" placeholder="Why do you want to join? (Tell us about your skills!)"></textarea>
-            <button onclick="submitJoinRequest()" class="btn-primary full-width">Send Request</button>
+            <h2>Join <span id="modalClubName" class="gradient-text"></span></h2>
+            <p>Tell us why you're a great fit!</p>
+            <textarea id="joinMessage" placeholder="I want to join because..."></textarea>
+            <button onclick="submitJoinRequest()" class="btn-glow full-width">Send Request</button>
         </div>
     </div>
 
     <footer>
-       <p>&copy; 2026 CampusConnect. SE-2416. Built by AYAUZHAN | BEKZAT | SULTAN.</p>
+        <div class="footer-content">
+            <p>&copy; 2026 CampusConnect. Made with 💜 by the Dream Team.</p>
+        </div>
     </footer>
 
     <script src="script.js"></script>
 </body>
 </html>
-
-    <script src="script.js"></script>
-</body>
-
-</html>
-
