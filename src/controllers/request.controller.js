@@ -5,25 +5,27 @@ const User = require("../models/User");
 const createRequest = async (req, res, next) => {
     try {
         const { club, message } = req.body;
-
         if (!club || !message) {
             res.status(400);
             throw new Error("Club and message are required");
         }
 
+        
         const request = await MembershipRequest.create({
             user: req.user._id,
             club,
             message,
         });
 
-        const user = await User.findById(req.user._id);
-        const subject = `Your request to join ${club} club`;
-        const text = `Hello ${user.username},\n\nYour request to join the ${club} club has been successfully submitted.\n\nWe will notify you once your application is processed.`;
-
-
-        await sendEmail(user.email, subject, text);
-
+       
+        try {
+            const user = await User.findById(req.user._id);
+            const subject = `Your request to join ${club} club`;
+            const text = `Hello ${user.username},\n\nYour request to join the ${club} club has been successfully submitted.`;
+            await sendEmail(user.email, subject, text);
+        } catch (emailError) {
+            console.log("Email failed to send (ignoring):", emailError.message);
+        }
 
         res.status(201).json(request);
     } catch (err) {
