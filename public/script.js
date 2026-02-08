@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api";
+const API_URL = "/api";
 
 // Utils
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -190,4 +190,5 @@ function getColor(status) {
     if(status === 'approved') return '#2ecc71';
     if(status === 'rejected') return '#e74c3c';
     return '#f1c40f';
+
 }
