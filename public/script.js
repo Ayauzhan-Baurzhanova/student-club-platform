@@ -34,21 +34,40 @@ function logout() {
 // ==========================================
 // PAGE: HOME
 // ==========================================
+// --- TOAST FUNCTION ---
+function showToast(message, type = "success") {
+    const toast = document.getElementById("toast");
+    toast.className = type === "success" ? "success show" : "error show";
+    toast.innerText = message;
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        toast.className = toast.className.replace("show", "");
+    }, 3000);
+}
+
+// ==========================================
+// PAGE: HOME
+// ==========================================
 function initHome() {
-    // Only logged-in users can join
     window.openJoinModal = (clubName) => {
         if (!localStorage.getItem("token")) {
-            alert("Please log in to join clubs!");
-            window.location.href = "login.html";
+            showToast("Please log in to join clubs!", "error");
+            setTimeout(() => window.location.href = "login.html", 1500);
             return;
         }
         currentClub = clubName;
         document.getElementById("modalClubName").innerText = clubName.toUpperCase();
-        document.getElementById("joinModal").classList.remove("hidden");
+        
+        const modal = document.getElementById("joinModal");
+        modal.classList.remove("hidden");
+        setTimeout(() => modal.classList.add("visible"), 10);
     };
 
     window.closeModal = () => {
-        document.getElementById("joinModal").classList.add("hidden");
+        const modal = document.getElementById("joinModal");
+        modal.classList.remove("visible");
+        setTimeout(() => modal.classList.add("hidden"), 300);
     };
 
     window.submitJoinRequest = async () => {
@@ -61,11 +80,21 @@ function initHome() {
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                 body: JSON.stringify({ club: currentClub, message })
             });
-            if (!res.ok) throw new Error("Failed to join");
-            alert("Request Sent!");
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                
+                throw new Error(data.message || "Failed to join");
+            }
+
+            // SUCCESS!
             closeModal();
+            document.getElementById("joinMessage").value = ""; // Clear text
+            showToast(`Request sent to ${currentClub.toUpperCase()} club!`, "success");
+            
         } catch (err) {
-            alert(err.message);
+            showToast(err.message, "error");
         }
     };
 }
@@ -272,3 +301,4 @@ window.closeModal = () => {
         modal.classList.add("hidden");
     }, 300);
 };
+
