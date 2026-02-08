@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel | CampusConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body id="page-admin">
+
+    <nav class="nav-admin">
+        <div class="logo">🛡️ Admin Dashboard</div>
+        <div class="nav-links">
+            <a href="index.html">View Site</a>
+            <a href="profile.html">My Profile</a>
+            <button onclick="logout()" class="btn-outline">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="admin-header">
+            <h1>Membership Requests</h1>
+            <p>Review and manage student applications.</p>
+        </header>
+
+        <div class="admin-grid">
+            <div class="stat-card">
+                <h3>Total Requests</h3>
+                <span id="statTotal">0</span>
+            </div>
+            <div class="stat-card pending">
+                <h3>Pending</h3>
+                <span id="statPending">0</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="requestsTable">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Club</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminRequestsList">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
