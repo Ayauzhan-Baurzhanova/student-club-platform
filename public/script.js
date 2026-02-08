@@ -227,3 +227,48 @@ async function initAdmin(user) {
 
     loadData();
 }
+
+
+// --- HERO SCROLL FADE EFFECT ---
+window.addEventListener('scroll', () => {
+    const heroBg = document.getElementById('hero-bg');
+    if (heroBg) {
+        const scrollPosition = window.scrollY;
+        // Calculate opacity: starts at 1, goes to 0 as you scroll 600px down
+        let opacity = 1 - (scrollPosition / 600);
+        
+        // Don't let opacity go below 0
+        if (opacity < 0) opacity = 0;
+        
+        heroBg.style.opacity = opacity;
+        // Optional: Also move it slightly for parallax effect
+        heroBg.style.transform = `translateY(${scrollPosition * 0.5}px)`;
+    }
+});
+
+
+window.openJoinModal = (clubName) => {
+    if (!localStorage.getItem("token")) {
+        alert("Please log in to join clubs!");
+        window.location.href = "login.html";
+        return;
+    }
+    currentClub = clubName;
+    document.getElementById("modalClubName").innerText = clubName.toUpperCase();
+    const modal = document.getElementById("joinModal");
+    modal.classList.remove("hidden"); // Remove display:none
+    
+    // Small timeout to allow CSS transition to catch the opacity change
+    setTimeout(() => {
+        modal.classList.add("visible");
+    }, 10);
+};
+
+window.closeModal = () => {
+    const modal = document.getElementById("joinModal");
+    modal.classList.remove("visible");
+    // Wait for animation to finish before hiding
+    setTimeout(() => {
+        modal.classList.add("hidden");
+    }, 300);
+};
