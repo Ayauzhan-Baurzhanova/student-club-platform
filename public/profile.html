@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile | CampusConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body id="page-profile">
+
+    <nav>
+        <div class="logo"><a href="index.html">CampusConnect 🚀</a></div>
+        <div class="nav-links">
+            <a href="index.html">Clubs</a>
+            <button onclick="logout()" class="btn-outline">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container layout-split">
+        <aside class="profile-card">
+            <div class="avatar">👤</div>
+            <h2 id="profileName">Loading...</h2>
+            <p id="profileEmail">...</p>
+            <span id="profileRole" class="badge">Student</span>
+            
+            <div id="adminLink" class="hidden" style="margin-top: 20px;">
+                <a href="admin.html" class="btn-primary full-width">Go to Admin Panel</a>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <h2>My Applications</h2>
+            <div id="myRequestsList" class="list-container">
+                <p>Loading your history...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
